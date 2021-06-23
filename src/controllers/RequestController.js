@@ -24,6 +24,12 @@ class RequestController {
         ],
       });
 
+      const totalValue = requestProd.dataValues.products
+        .map((element) => element.dataValues.value)
+        .reduce((previous, current) => previous + current);
+
+      requestProd.update({ totalValue });
+
       return res.send(requestProd);
     } catch (err) {
       return res.status(400).send({ err: err.message });
