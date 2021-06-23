@@ -1,19 +1,19 @@
 const db = require('../models');
-const { Products, Requests } = db;
+const { Products, Orders, Users } = db;
 
-class RequestController {
+class OrderController {
   static async insert(req, res) {
     try {
       const { products, ...data } = req.body;
-      const request = await Requests.create(data);
+      const order = await Orders.create(data);
 
       if (products && products.length > 0) {
-        await request.setProducts(products);
+        await order.setProducts(products);
       }
 
-      const { id } = request;
+      const { id } = order;
 
-      const requestProd = await Requests.findOne({
+      const orderProd = await Orders.findOne({
         where: { id },
         include: [
           {
@@ -21,16 +21,17 @@ class RequestController {
             as: 'products',
             through: { attributes: [] },
           },
+          Users,
         ],
       });
 
-      const totalValue = requestProd.dataValues.products
+      const totalValue = orderProd.dataValues.products
         .map((element) => element.dataValues.value)
         .reduce((previous, current) => previous + current);
 
-      requestProd.update({ totalValue });
+      orderProd.update({ totalValue });
 
-      return res.send(requestProd);
+      return res.send(orderProd);
     } catch (err) {
       return res.status(400).send({ err: err.message });
     }
@@ -38,26 +39,52 @@ class RequestController {
 
   static async show(req, res) {
     try {
-      const request = await Requests.findAll({
+      const order = await Orders.findAll({
         include: [
           {
             model: Products,
             as: 'products',
             through: { attributes: [] },
           },
+          Users,
         ],
       });
 
-      return res.send(request);
+      return res.send(order);
     } catch (err) {
       return res.status(400).send({ err: err.message });
+    }
+  }
+
+  static async index(req, res) {
+    try {
+      const { id } = req.params;
+
+      const order = await Orders.findByPk(id, {
+        include: [
+          {
+            model: Products,
+            as: 'products',
+            through: { attributes: [] },
+          },
+          Users,
+        ],
+      });
+
+      if (!order) {
+        return res.status(204).send();
+      }
+
+      return res.send(order);
+    } catch (error) {
+      return res.status(400).send({ error: error.message });
     }
   }
 
   static async update(req, res) {
     try {
       const { id } = req.params;
-      const request = await Requests.findOne({
+      const order = await Orders.findOne({
         where: { id },
         include: [
           {
@@ -65,17 +92,18 @@ class RequestController {
             as: 'products',
             through: { attributes: [] },
           },
+          Users,
         ],
       });
 
       const { products, ...data } = req.body;
-      request.update(data);
+      order.update(data);
 
       if ((products, products.length > 0)) {
-        request.setProducts(products);
+        order.setProducts(products);
       }
 
-      return res.send(request);
+      return res.send(order);
     } catch (err) {
       return res.status(400).send({ err: err.message });
     }
@@ -85,7 +113,7 @@ class RequestController {
     try {
       const { id } = req.params;
 
-      await Requests.destroy({ where: { id } });
+      await Orders.destroy({ where: { id } });
 
       return res.send({ message: 'Successfully delete request' });
     } catch (err) {
@@ -94,4 +122,4 @@ class RequestController {
   }
 }
 
-module.exports = RequestController;
+module.exports = OrderController;
