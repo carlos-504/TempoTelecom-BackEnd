@@ -48,6 +48,7 @@ class OrderController {
           },
           Users,
         ],
+        order: [['id', 'DESC']],
       });
 
       return res.send(order);
