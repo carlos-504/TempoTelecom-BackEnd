@@ -45,7 +45,7 @@ npx sequelize-cli db:seed:all
 6. Após popular o banco com o seed execute o comando 
 
 ```
-npm install
+npm start
 ```
 
 7. Em caso de erro, verifique se credenciais do arquivo config.json e compátivel com os da sua máquina
