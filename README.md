@@ -42,7 +42,13 @@ npx sequelize-cli db:migrate
 ```
 npx sequelize-cli db:seed:all
 ```
-6. Em caso de erro, verifique se credenciais do arquivo config.json e compátivel com os da sua máquina
+6. Após popular o banco com o seed execute o comando 
+
+```
+npm install
+```
+
+7. Em caso de erro, verifique se credenciais do arquivo config.json e compátivel com os da sua máquina
 
 ## REST API
 O sistema conta com uma API para realizar os CRUDS. 
